@@ -1,34 +1,26 @@
 -- ========================================================
--- GROW TOGETHER: REDESIGNED DAILY ENCOURAGEMENT SYSTEM MIGRATION
+-- GROW TOGETHER: DAILY ENCOURAGEMENT SYSTEM SCHEMA & MIGRATION
 -- ========================================================
 
--- 1. Ensure `supports` table has `date` column and daily unique constraint
-ALTER TABLE public.supports 
-  ADD COLUMN IF NOT EXISTS date DATE DEFAULT CURRENT_DATE;
+-- 1. `supports` Table schema:
+-- Contains: id, goal_id, from_user, message, created_at
+-- Unique constraint: (goal_id, from_user)
 
--- Fill missing date values from created_at timestamp
-UPDATE public.supports 
-SET date = (created_at AT TIME ZONE 'UTC')::date 
-WHERE date IS NULL;
+CREATE TABLE IF NOT EXISTS public.supports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  goal_id UUID NOT NULL REFERENCES public.goals(id) ON DELETE CASCADE,
+  from_user UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  message TEXT NOT NULL DEFAULT '❤️',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT supports_goal_from_user_key UNIQUE (goal_id, from_user)
+);
 
--- Make date NOT NULL
-ALTER TABLE public.supports 
-  ALTER COLUMN date SET NOT NULL;
-
--- Drop old constraints if present and enforce UNIQUE(goal_id, from_user, date)
-ALTER TABLE public.supports 
-  DROP CONSTRAINT IF EXISTS supports_goal_user_unique,
-  DROP CONSTRAINT IF EXISTS supports_goal_from_user_date_key;
-
-ALTER TABLE public.supports 
-  ADD CONSTRAINT supports_goal_from_user_date_key UNIQUE (goal_id, from_user, date);
-
--- Indexes for lightning fast aggregations (< 1ms queries)
+-- Performance Indexes
 CREATE INDEX IF NOT EXISTS idx_supports_goal_id ON public.supports(goal_id);
 CREATE INDEX IF NOT EXISTS idx_supports_from_user ON public.supports(from_user);
-CREATE INDEX IF NOT EXISTS idx_supports_goal_user_date ON public.supports(goal_id, from_user, date);
+CREATE INDEX IF NOT EXISTS idx_supports_created_at ON public.supports(created_at);
 
--- 2. Create `notifications` table for Daily Encouragements
+-- 2. `notifications` Table
 CREATE TABLE IF NOT EXISTS public.notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -50,8 +42,8 @@ DROP POLICY IF EXISTS "Supports are viewable by everyone" ON public.supports;
 CREATE POLICY "Supports are viewable by everyone" 
   ON public.supports FOR SELECT USING (true);
 
-DROP POLICY IF EXISTS "Users can encourage other users goals once per day" ON public.supports;
-CREATE POLICY "Users can encourage other users goals once per day" 
+DROP POLICY IF EXISTS "Users can encourage other users goals" ON public.supports;
+CREATE POLICY "Users can encourage other users goals" 
   ON public.supports FOR INSERT WITH CHECK (
     auth.uid() = from_user AND
     NOT EXISTS (

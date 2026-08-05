@@ -32,8 +32,7 @@ export interface Support {
   id: string
   goal_id: string
   from_user: string
-  date?: string
-  message?: string
+  message: string
   created_at: string
 }
 
