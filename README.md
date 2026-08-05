@@ -1,42 +1,197 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img src="./docs/landing-page.png" width="900" alt="Grow Together">
+</p>
+# 🌱 Grow Together
 
-## การยืนยันตัวตนสำหรับนักศึกษา
+> **แพลตฟอร์มเพื่อการพัฒนาตนเองผ่านการตั้งเป้าหมายและการสนับสนุนจากเพื่อน**
 
-ผู้ใช้เข้าสู่ระบบด้วย **รหัสนักศึกษา** และรหัสผ่านเท่านั้น ไม่มีช่องอีเมลในหน้าเว็บ
-แอปสร้างอีเมลภายในจากรหัสนักศึกษาเพื่อให้ Supabase Auth ทำงานได้ โดยผู้ใช้จะไม่เห็น
-หรือกรอกอีเมลนี้
+Grow Together เป็นเว็บแอปพลิเคชันที่ช่วยให้ผู้ใช้สามารถตั้งเป้าหมาย ติดตามความก้าวหน้า และได้รับกำลังใจจากเพื่อน เพื่อสร้างแรงจูงใจในการพัฒนาตนเองอย่างต่อเนื่อง
 
-ก่อนเปิดใช้จริง ให้ปิด **Confirm email** ใน Supabase Auth เพื่อไม่ให้ระบบส่งลิงก์
-ยืนยันไปยังอีเมลภายใน และรัน `supabase/schema.sql` กับฐานข้อมูลใหม่เพื่อสร้างคอลัมน์
-`student_id` (unique) และ `full_name` ในตาราง `profiles`.
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## ✨ แนวคิดของโครงงาน
 
-Currently, two official plugins are available:
+หลายคนเริ่มต้นทำเป้าหมายได้ดี แต่ขาดแรงจูงใจในการทำต่อ
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Grow Together จึงถูกพัฒนาขึ้นเพื่อสร้างสภาพแวดล้อมที่ผู้ใช้สามารถ
 
-## React Compiler
+- 🎯 ตั้งเป้าหมาย
+- 📈 ติดตามความก้าวหน้า
+- ❤️ ได้รับกำลังใจจากเพื่อน
+- 🤝 พัฒนาตนเองไปพร้อมกับชุมชน
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+โดยเน้นความเรียบง่าย ใช้งานง่าย และไม่มี Social Feed ที่รบกวนสมาธิ
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+# 🚀 ฟีเจอร์หลัก
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### 👤 ระบบสมาชิก
+
+- สมัครสมาชิก
+- เข้าสู่ระบบ
+- เปลี่ยนรหัสผ่าน
+- จัดการข้อมูลส่วนตัว
+
+---
+
+### 🎯 ระบบเป้าหมาย
+
+- เพิ่มเป้าหมาย
+- แก้ไขเป้าหมาย
+- ลบเป้าหมาย
+- เช็กอินประจำวัน
+- ติดตามความสำเร็จ
+
+---
+
+### 👥 ระบบเพื่อน
+
+- เพิ่มเพื่อน
+- ดูเป้าหมายของเพื่อน
+- สนับสนุนเป้าหมายของเพื่อน
+
+---
+
+### ❤️ ระบบส่งกำลังใจ
+
+- ส่งกำลังใจได้วันละ 1 ครั้งต่อเป้าหมาย
+- นับจำนวนผู้ส่งกำลังใจ
+- แสดงผู้ส่งกำลังใจล่าสุด
+- แจ้งเตือนเมื่อได้รับกำลังใจ
+
+---
+
+### 👤 โปรไฟล์
+
+- รูปโปรไฟล์
+- ชื่อผู้ใช้
+- รหัสนักศึกษา
+- เปลี่ยนรหัสผ่าน
+
+---
+
+# 🛠 เทคโนโลยีที่ใช้
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Framer Motion
+
+## Backend
+
+- Supabase Authentication
+- Supabase Database
+- Row Level Security (RLS)
+
+---
+
+# 🗄 โครงสร้างฐานข้อมูล
+
+ตารางหลัก
+
+- profiles
+- goals
+- friends
+- supports
+- daily_checkins
+
+ความสัมพันธ์
+
+```
+profiles
+   │
+   ├── goals
+   ├── friends
+   └── supports
+
+goals
+   ├── daily_checkins
+   └── supports
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+---
+
+# 🔒 ความปลอดภัย
+
+- Supabase Authentication
+- Row Level Security (RLS)
+- Protected Routes
+- Password Hashing
+- Session Management
+
+---
+
+# 💻 การติดตั้ง
+
+```bash
+git clone https://github.com/WeirCNT/Grow-together.git
+
+cd Grow-together
+
+npm install
+
+npm run dev
+```
+
+---
+
+# ⚙️ Environment Variables
+
+สร้างไฟล์ `.env`
+
+```env
+VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+---
+
+# 🌐 เว็บไซต์
+
+**Live Demo**
+
+https://grow-together-puce.vercel.app
+
+---
+
+# 📸 ตัวอย่างหน้าจอ
+
+> เพิ่มภาพหน้าจอของระบบในภายหลัง
+
+- Landing Page
+- Dashboard
+- Goals
+- Community
+- Profile
+
+---
+
+# 🔮 แผนพัฒนาต่อ
+
+- Forgot Password
+- ระบบ Badge
+- ระบบ Achievement
+- Weekly Report
+- Mobile Application
+- AI Goal Assistant
+
+---
+
+# 👨‍💻 ผู้พัฒนา
+
+**ชนาธิป (Weir)**
+
+โครงงานพัฒนามนุษย์
+
+มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย
+
+---
+
+# 📄 License
+
+MIT License
