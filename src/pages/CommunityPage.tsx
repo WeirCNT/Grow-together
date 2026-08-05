@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Users, Heart, Target, Check, ChevronRight } from 'lucide-react'
+import { Users, Heart, Target, Check, ChevronRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -25,11 +25,17 @@ export function CommunityPage() {
   const [goals, setGoals] = useState<CommunityGoalWithDetails[]>([])
   const [loading, setLoading] = useState(true)
   const [summaries, setSummaries] = useState<Record<string, GoalSupportSummary>>({})
-  const [encouragingId, setEncouragingId] = useState<string | null>(null)
 
-  // Supporters Modal State
-  const [modalOpen, setModalOpen] = useState(false)
-  const [selectedGoalForModal, setSelectedGoalForModal] = useState<CommunityGoalWithDetails | null>(null)
+  // Encouragement Dialog Modal State
+  const [encourageModalOpen, setEncourageModalOpen] = useState(false)
+  const [selectedGoalForEncourage, setSelectedGoalForEncourage] = useState<CommunityGoalWithDetails | null>(null)
+  const [customMessage, setCustomMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  // Supporters List Modal State
+  const [supportersModalOpen, setSupportersModalOpen] = useState(false)
+  const [selectedGoalForSupporters, setSelectedGoalForSupporters] = useState<CommunityGoalWithDetails | null>(null)
 
   const loadCommunityData = async () => {
     setLoading(true)
@@ -56,12 +62,25 @@ export function CommunityPage() {
     void loadCommunityData()
   }, [user?.id])
 
-  const handleEncourage = async (goal: CommunityGoalWithDetails) => {
-    if (!user || goal.user_id === user.id || encouragingId) return
-    setEncouragingId(goal.id)
+  const openEncourageModal = (goal: CommunityGoalWithDetails) => {
+    if (!user || goal.user_id === user.id) return
+    setSelectedGoalForEncourage(goal)
+    setCustomMessage('')
+    setErrorMessage(null)
+    setEncourageModalOpen(true)
+  }
+
+  const handleSendEncouragement = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user || !selectedGoalForEncourage || isSubmitting) return
+
+    setIsSubmitting(true)
+    setErrorMessage(null)
+
+    const goal = selectedGoalForEncourage
 
     try {
-      await encourageGoal(goal.id, user.id, goal.user_id, profile?.full_name)
+      await encourageGoal(goal.id, user.id, goal.user_id, profile?.full_name, customMessage)
 
       // Optimistic update of local summary
       setSummaries((prev) => {
@@ -112,16 +131,21 @@ export function CommunityPage() {
           },
         }
       })
-    } catch (err) {
+
+      setEncourageModalOpen(false)
+      setSelectedGoalForEncourage(null)
+      setCustomMessage('')
+    } catch (err: any) {
       console.error('Failed to send encouragement:', err)
+      setErrorMessage(err.message || 'ไม่สามารถส่งกำลังใจได้ กรุณาลองใหม่อีกครั้ง')
     } finally {
-      setEncouragingId(null)
+      setIsSubmitting(false)
     }
   }
 
   const openSupportersModal = (goal: CommunityGoalWithDetails) => {
-    setSelectedGoalForModal(goal)
-    setModalOpen(true)
+    setSelectedGoalForSupporters(goal)
+    setSupportersModalOpen(true)
   }
 
   return (
@@ -230,8 +254,8 @@ export function CommunityPage() {
                   {/* Encourage Button */}
                   {!isOwnGoal && user ? (
                     <Button
-                      disabled={summary.userHasEncouragedToday || encouragingId === goal.id}
-                      onClick={() => handleEncourage(goal)}
+                      disabled={summary.userHasEncouragedToday}
+                      onClick={() => openEncourageModal(goal)}
                       className={`w-full gap-2 font-semibold text-xs h-9 cursor-pointer transition-all duration-200 ${
                         summary.userHasEncouragedToday
                           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-not-allowed opacity-90'
@@ -309,8 +333,95 @@ export function CommunityPage() {
         </div>
       )}
 
-      {/* RECENT SUPPORTERS COMPLETE MODAL */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+      {/* 1. SEND ENCOURAGEMENT MODAL / DIALOG */}
+      <Dialog open={encourageModalOpen} onOpenChange={setEncourageModalOpen}>
+        <DialogContent className="sm:max-w-md animate-scale-in">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base font-bold">
+              <div className="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                <Heart className="w-4 h-4 fill-rose-500" />
+              </div>
+              <span>{t.encourageModalTitle}</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedGoalForEncourage && (
+            <form onSubmit={handleSendEncouragement} className="space-y-4 py-2">
+              {/* Target Goal Summary Preview */}
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1 text-xs">
+                <div className="flex items-center gap-2">
+                  <Avatar
+                    src={selectedGoalForEncourage.profile?.avatar}
+                    name={selectedGoalForEncourage.profile?.full_name}
+                    userId={selectedGoalForEncourage.user_id}
+                    size="xs"
+                  />
+                  <span className="font-semibold text-foreground">
+                    {selectedGoalForEncourage.profile?.full_name || 'เพื่อนนิสิต'}
+                  </span>
+                </div>
+                <p className="font-bold text-sm text-foreground pt-1">
+                  "{selectedGoalForEncourage.title}"
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-xs font-medium">
+                  {errorMessage}
+                </div>
+              )}
+
+              {/* Optional Textarea with 200 char limit */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">
+                  ข้อความส่งกำลังใจ
+                </label>
+                <div className="relative">
+                  <textarea
+                    value={customMessage}
+                    onChange={(e) => setCustomMessage(e.target.value.slice(0, 200))}
+                    placeholder={t.encourageMessagePlaceholder}
+                    rows={3}
+                    maxLength={200}
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  />
+                  <div className="text-[10px] text-muted-foreground text-right pt-0.5">
+                    {customMessage.length}/200
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2 pt-2 sm:justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEncourageModalOpen(false)}
+                  className="cursor-pointer"
+                >
+                  {t.cancel}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-primary-500 hover:bg-primary-600 text-white font-semibold gap-2 cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Heart className="w-4 h-4 fill-white" />
+                      <span>{t.sendEncouragementButton}</span>
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 2. RECENT SUPPORTERS COMPLETE MODAL */}
+      <Dialog open={supportersModalOpen} onOpenChange={setSupportersModalOpen}>
         <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col animate-scale-in">
           <DialogHeader className="pb-2 border-b border-border/40">
             <DialogTitle className="space-y-1">
@@ -319,12 +430,12 @@ export function CommunityPage() {
                 <span>{t.recentSupporters}</span>
               </div>
 
-              {selectedGoalForModal && (
+              {selectedGoalForSupporters && (
                 <div className="text-xs font-semibold text-rose-500 dark:text-rose-400 flex items-center gap-1 pt-0.5">
                   <span>
                     {t.supportedByPeople.replace(
                       '{count}',
-                      (summaries[selectedGoalForModal.id]?.uniqueSupportersCount || 0).toString()
+                      (summaries[selectedGoalForSupporters.id]?.uniqueSupportersCount || 0).toString()
                     )}
                   </span>
                   <span>❤️</span>
@@ -334,8 +445,8 @@ export function CommunityPage() {
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-3 py-3 pr-1">
-            {selectedGoalForModal &&
-              (summaries[selectedGoalForModal.id]?.recentSupporters || []).map((supporter: SupporterInfo) => (
+            {selectedGoalForSupporters &&
+              (summaries[selectedGoalForSupporters.id]?.recentSupporters || []).map((supporter: SupporterInfo) => (
                 <div
                   key={supporter.user_id}
                   className="flex items-start gap-3 p-3.5 rounded-xl bg-muted/40 border border-border/50 text-xs transition-all hover:bg-muted/70"
@@ -371,7 +482,7 @@ export function CommunityPage() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)} className="cursor-pointer">
+            <Button variant="outline" onClick={() => setSupportersModalOpen(false)} className="cursor-pointer">
               {t.close}
             </Button>
           </DialogFooter>

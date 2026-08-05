@@ -152,7 +152,7 @@ async function processRecentSupportersSummary(
 }
 
 /**
- * Sends a daily encouragement for a goal.
+ * Sends a daily encouragement for a goal with an optional message.
  * Validates that:
  * 1. User is not encouraging their own goal
  * 2. User has not already encouraged this goal today
@@ -161,11 +161,15 @@ export async function encourageGoal(
   goalId: string,
   fromUserId: string,
   goalOwnerId: string,
-  senderName?: string
+  senderName?: string,
+  customMessage?: string
 ): Promise<void> {
   if (fromUserId === goalOwnerId) {
     throw new Error('ไม่สามารถส่งกำลังใจให้เป้าหมายของตนเองได้')
   }
+
+  const trimmedMessage = customMessage?.trim() || ''
+  const supportMessage = trimmedMessage || '❤️'
 
   // 1. Insert support record matching schema: id, goal_id, from_user, message, created_at
   const { error: insertErr } = await supabase
@@ -173,7 +177,7 @@ export async function encourageGoal(
     .insert([{
       goal_id: goalId,
       from_user: fromUserId,
-      message: '❤️',
+      message: supportMessage,
       created_at: new Date().toISOString(),
     }] as any)
 
@@ -187,16 +191,20 @@ export async function encourageGoal(
 
   // 2. Create in-app notification for the goal owner
   try {
+    const notifMsg = trimmedMessage
+      ? `❤️ ${senderName || 'เพื่อนนิสิต'}: "${trimmedMessage}"`
+      : `❤️ ${senderName || 'เพื่อนนิสิต'} ส่งกำลังใจให้เป้าหมายของคุณ`
+
     await supabase.from('notifications').insert([{
       user_id: goalOwnerId,
       from_user: fromUserId,
       goal_id: goalId,
-      message: `❤️ ${senderName || 'เพื่อนนิสิต'} ส่งกำลังใจให้เป้าหมายของคุณ`,
+      message: notifMsg,
       is_read: false,
       created_at: new Date().toISOString(),
     }] as any)
   } catch {
-    // Notifications creation is non-blocking if table is still migrating
+    // Notifications creation is non-blocking
   }
 }
 
