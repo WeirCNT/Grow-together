@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./docs/landing-page.png" alt="Grow Together Landing Page" width="900">
-</p>
-
 # 🌱 Grow Together
 
 > **แพลตฟอร์มสำหรับนิสิต เพื่อการพัฒนาตนเองผ่านการตั้งเป้าหมาย เช็กอินทุกวัน และสร้างวินัยร่วมกัน**
