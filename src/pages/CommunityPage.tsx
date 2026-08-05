@@ -18,6 +18,15 @@ import { Avatar } from '@/components/shared/Avatar'
 import { WeeklyActivityGrid } from '@/components/shared/WeeklyActivityGrid'
 import { formatRelativeEncouragedDate } from '@/lib/utils'
 
+const QUICK_MESSAGES = [
+  '💪 สู้ ๆ นะ',
+  '❤️ เป็นกำลังใจให้เสมอ',
+  '✨ ทำได้แน่นอน',
+  '🔥 อย่ายอมแพ้',
+  '👏 เก่งมาก',
+  '🌱 ค่อย ๆ ไป เดี๋ยวก็ถึงเป้าหมาย',
+]
+
 export function CommunityPage() {
   const { user, profile } = useAuth()
   const { t, language } = useLanguage()
@@ -335,18 +344,19 @@ export function CommunityPage() {
 
       {/* 1. SEND ENCOURAGEMENT MODAL / DIALOG */}
       <Dialog open={encourageModalOpen} onOpenChange={setEncourageModalOpen}>
-        <DialogContent className="sm:max-w-md animate-scale-in">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold">
-              <div className="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center">
-                <Heart className="w-4 h-4 fill-rose-500" />
-              </div>
+        <DialogContent className="sm:max-w-md animate-scale-in border border-border/80 bg-card p-6 rounded-2xl shadow-lg">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
+              <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
               <span>{t.encourageModalTitle}</span>
             </DialogTitle>
+            <p className="text-xs text-muted-foreground">
+              {t.encourageModalSub}
+            </p>
           </DialogHeader>
 
           {selectedGoalForEncourage && (
-            <form onSubmit={handleSendEncouragement} className="space-y-4 py-2">
+            <form onSubmit={handleSendEncouragement} className="space-y-4 pt-2">
               {/* Target Goal Summary Preview */}
               <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1 text-xs">
                 <div className="flex items-center gap-2">
@@ -360,7 +370,7 @@ export function CommunityPage() {
                     {selectedGoalForEncourage.profile?.full_name || 'เพื่อนนิสิต'}
                   </span>
                 </div>
-                <p className="font-bold text-sm text-foreground pt-1">
+                <p className="font-bold text-sm text-foreground pt-1 truncate">
                   "{selectedGoalForEncourage.title}"
                 </p>
               </div>
@@ -371,11 +381,34 @@ export function CommunityPage() {
                 </div>
               )}
 
-              {/* Optional Textarea with 200 char limit */}
-              <div className="space-y-1.5">
+              {/* Quick Message Chips */}
+              <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
-                  ข้อความส่งกำลังใจ
+                  {t.quickMessagesTitle}
                 </label>
+                <div className="flex flex-wrap gap-2">
+                  {QUICK_MESSAGES.map((msg) => {
+                    const isSelected = customMessage === msg
+                    return (
+                      <button
+                        key={msg}
+                        type="button"
+                        onClick={() => setCustomMessage(msg)}
+                        className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 cursor-pointer ${
+                          isSelected
+                            ? 'bg-primary-500/15 border-primary-500 text-primary-600 dark:text-primary-400 font-semibold shadow-xs scale-105'
+                            : 'bg-muted/40 hover:bg-muted border-border/70 text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {msg}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Message Textarea */}
+              <div className="space-y-1.5">
                 <div className="relative">
                   <textarea
                     value={customMessage}
@@ -383,10 +416,10 @@ export function CommunityPage() {
                     placeholder={t.encourageMessagePlaceholder}
                     rows={3}
                     maxLength={200}
-                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                    className="w-full rounded-xl border border-input bg-transparent px-3.5 py-2.5 text-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                   />
-                  <div className="text-[10px] text-muted-foreground text-right pt-0.5">
-                    {customMessage.length}/200
+                  <div className="text-[11px] text-muted-foreground text-right pt-0.5 font-medium">
+                    {customMessage.length} / 200
                   </div>
                 </div>
               </div>
@@ -396,14 +429,14 @@ export function CommunityPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setEncourageModalOpen(false)}
-                  className="cursor-pointer"
+                  className="cursor-pointer text-xs"
                 >
                   {t.cancel}
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-primary-500 hover:bg-primary-600 text-white font-semibold gap-2 cursor-pointer"
+                  className="bg-primary-500 hover:bg-primary-600 text-white font-semibold gap-2 cursor-pointer text-xs h-9"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

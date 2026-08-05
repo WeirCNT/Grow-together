@@ -169,7 +169,7 @@ export async function encourageGoal(
   }
 
   const trimmedMessage = customMessage?.trim() || ''
-  const supportMessage = trimmedMessage || '❤️'
+  const supportMessage = trimmedMessage || '❤️ เป็นกำลังใจให้นะ'
 
   // 1. Insert support record matching schema: id, goal_id, from_user, message, created_at
   const { error: insertErr } = await supabase
@@ -191,9 +191,7 @@ export async function encourageGoal(
 
   // 2. Create in-app notification for the goal owner
   try {
-    const notifMsg = trimmedMessage
-      ? `❤️ ${senderName || 'เพื่อนนิสิต'}: "${trimmedMessage}"`
-      : `❤️ ${senderName || 'เพื่อนนิสิต'} ส่งกำลังใจให้เป้าหมายของคุณ`
+    const notifMsg = `❤️ ${senderName || 'เพื่อนนิสิต'}: "${supportMessage}"`
 
     await supabase.from('notifications').insert([{
       user_id: goalOwnerId,
