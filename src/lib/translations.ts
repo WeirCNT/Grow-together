@@ -121,6 +121,10 @@ const thaiTranslations = {
   noCommunityGoals: 'ยังไม่มีเป้าหมายในชุมชน',
   noCommunityGoalsSub: 'เป็นคนแรกที่แชร์เป้าหมายของคุณในชุมชน!',
   encouragementSent: 'ส่งกำลังใจเรียบร้อยแล้ว! ❤️',
+  loadMore: 'โหลดเพิ่มเติม',
+  viewAll: 'ดูทั้งหมด',
+  showLess: 'แสดงน้อยลง',
+  readMore: 'ดูเพิ่มเติม',
 
   // Profile Page
   myProfile: 'โปรไฟล์ของฉัน',
@@ -254,6 +258,10 @@ const englishTranslations: typeof thaiTranslations = {
   noCommunityGoals: 'No community goals yet',
   noCommunityGoalsSub: 'Be the first to share your goal with the community!',
   encouragementSent: 'Encouragement sent! ❤️',
+  loadMore: 'Load More',
+  viewAll: 'View All',
+  showLess: 'Show Less',
+  readMore: 'Read more',
 
   myProfile: 'My Profile',
   editProfile: 'Edit Profile',

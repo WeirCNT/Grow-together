@@ -42,9 +42,10 @@ export function CommunityPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // Supporters List Modal State
+  // Supporters List Modal Pagination State
   const [supportersModalOpen, setSupportersModalOpen] = useState(false)
   const [selectedGoalForSupporters, setSelectedGoalForSupporters] = useState<CommunityGoalWithDetails | null>(null)
+  const [supporterPageLimit, setSupporterPageLimit] = useState(10)
 
   const loadCommunityData = async () => {
     setLoading(true)
@@ -154,6 +155,7 @@ export function CommunityPage() {
 
   const openSupportersModal = (goal: CommunityGoalWithDetails) => {
     setSelectedGoalForSupporters(goal)
+    setSupporterPageLimit(10)
     setSupportersModalOpen(true)
   }
 
@@ -186,6 +188,7 @@ export function CommunityPage() {
               recentSupporters: [],
             }
             const isOwnGoal = goal.user_id === user?.id
+            // Show only latest 3 supporter avatars on card
             const displaySupporters = summary.recentSupporters.slice(0, 3)
             const remainingSupporters = Math.max(0, summary.uniqueSupportersCount - 3)
 
@@ -231,7 +234,7 @@ export function CommunityPage() {
                     </h3>
                   </div>
                   {goal.description && (
-                    <p className="text-xs text-muted-foreground leading-relaxed pl-7">
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-7 line-clamp-2">
                       {goal.description}
                     </p>
                   )}
@@ -289,13 +292,13 @@ export function CommunityPage() {
                     </div>
                   ) : null}
 
-                  {/* 5. RECENT SUPPORTERS COMPACT SECTION */}
+                  {/* 5. RECENT SUPPORTERS COMPACT SECTION (Max 3 Avatars + Badge) */}
                   {summary.uniqueSupportersCount > 0 ? (
                     <div
                       onClick={() => openSupportersModal(goal)}
                       className="group pt-2 border-t border-border/30 flex items-center justify-between p-2 px-3 rounded-xl bg-muted/30 border border-border/40 hover:bg-muted/60 transition-all duration-200 cursor-pointer"
                     >
-                      {/* Left: Overlapping Avatars Stack */}
+                      {/* Left: Overlapping Avatars Stack (Max 3) */}
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2 overflow-hidden py-0.5">
                           {displaySupporters.map((s: SupporterInfo) => (
@@ -381,7 +384,7 @@ export function CommunityPage() {
                 </div>
               )}
 
-              {/* Quick Message Chips */}
+              {/* Quick Message Selectable Chips */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
                   {t.quickMessagesTitle}
@@ -453,7 +456,7 @@ export function CommunityPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 2. RECENT SUPPORTERS COMPLETE MODAL */}
+      {/* 2. RECENT SUPPORTERS COMPLETE MODAL (Paginated: Top 10 + Load More) */}
       <Dialog open={supportersModalOpen} onOpenChange={setSupportersModalOpen}>
         <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col animate-scale-in">
           <DialogHeader className="pb-2 border-b border-border/40">
@@ -478,40 +481,60 @@ export function CommunityPage() {
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto space-y-3 py-3 pr-1">
-            {selectedGoalForSupporters &&
-              (summaries[selectedGoalForSupporters.id]?.recentSupporters || []).map((supporter: SupporterInfo) => (
-                <div
-                  key={supporter.user_id}
-                  className="flex items-start gap-3 p-3.5 rounded-xl bg-muted/40 border border-border/50 text-xs transition-all hover:bg-muted/70"
-                >
-                  <Avatar
-                    src={supporter.profile?.avatar}
-                    name={supporter.profile?.full_name}
-                    userId={supporter.user_id}
-                    size="md"
-                    className="mt-0.5"
-                  />
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold text-sm text-foreground truncate">
-                        {supporter.profile?.full_name || 'เพื่อนนิสิต'}
-                      </span>
-                    </div>
+            {selectedGoalForSupporters && (() => {
+              const allSupporters = summaries[selectedGoalForSupporters.id]?.recentSupporters || []
+              const paginatedSupporters = allSupporters.slice(0, supporterPageLimit)
+              const hasMoreSupporters = allSupporters.length > supporterPageLimit
 
-                    <div className="text-xs text-muted-foreground flex flex-col gap-0.5 pt-0.5">
-                      <p className="flex items-center gap-1 text-[11px]">
-                        <span>{t.lastEncouraged}</span>
-                        <strong className="text-foreground font-semibold">
-                          {formatRelativeEncouragedDate(supporter.last_encouraged_at, language)}
-                        </strong>
-                      </p>
-                      <p className="text-[11px] text-primary-600 dark:text-primary-400 font-medium">
-                        {t.encouragedGoalTimes.replace('{count}', supporter.total_encouragements.toString())}
-                      </p>
+              return (
+                <>
+                  {paginatedSupporters.map((supporter: SupporterInfo) => (
+                    <div
+                      key={supporter.user_id}
+                      className="flex items-start gap-3 p-3.5 rounded-xl bg-muted/40 border border-border/50 text-xs transition-all hover:bg-muted/70"
+                    >
+                      <Avatar
+                        src={supporter.profile?.avatar}
+                        name={supporter.profile?.full_name}
+                        userId={supporter.user_id}
+                        size="md"
+                        className="mt-0.5 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-sm text-foreground truncate">
+                            {supporter.profile?.full_name || 'เพื่อนนิสิต'}
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-muted-foreground flex flex-col gap-0.5 pt-0.5">
+                          <p className="flex items-center gap-1 text-[11px]">
+                            <span>{t.lastEncouraged}</span>
+                            <strong className="text-foreground font-semibold">
+                              {formatRelativeEncouragedDate(supporter.last_encouraged_at, language)}
+                            </strong>
+                          </p>
+                          <p className="text-[11px] text-primary-600 dark:text-primary-400 font-medium">
+                            {t.encouragedGoalTimes.replace('{count}', supporter.total_encouragements.toString())}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  ))}
+
+                  {hasMoreSupporters && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSupporterPageLimit((prev) => prev + 10)}
+                      className="w-full text-xs font-semibold cursor-pointer py-2 mt-1"
+                    >
+                      {t.loadMore} ({allSupporters.length - supporterPageLimit})
+                    </Button>
+                  )}
+                </>
+              )
+            })()}
           </div>
 
           <DialogFooter>
