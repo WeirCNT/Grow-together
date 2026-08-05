@@ -43,16 +43,9 @@ const thaiTranslations = {
   mutualMotivation: 'ชุมชนแห่งกำลังใจ',
   mutualMotivationSub: 'ดูเป้าหมายของเพื่อน ส่งกำลังใจ และเติบโตไปพร้อมกัน',
 
-  // Benefits Section (สิ่งที่คุณจะได้รับ)
-  whyDifferent: 'สิ่งที่คุณจะได้รับ',
-  unlimitedGoalsTitle: 'ตั้งเป้าหมายได้ไม่จำกัด',
-  unlimitedGoalsSub: 'สร้างเป้าหมายด้านการเรียน สุขภาพ การเงิน หรือการพัฒนาตัวเอง',
-  oneClickTitle: 'เช็กอินทุกวัน',
-  oneClickSub: 'บันทึกความก้าวหน้าเพียงคลิกเดียว พร้อมรักษาวินัยอย่างต่อเนื่อง',
-  trackDisciplineTitle: 'ติดตามความก้าวหน้า',
-  trackDisciplineSub: 'ดูสถิติ วันต่อเนื่อง และประวัติการเช็กอินได้ในหน้าเดียว',
-  sendSupportTitle: 'สร้างแรงบันดาลใจร่วมกัน',
-  sendSupportSub: 'ส่งกำลังใจให้เพื่อน และเติบโตไปพร้อมกับชุมชน',
+  // Product Preview Section
+  productPreviewTitle: 'ดูภาพรวมของระบบ',
+  productPreviewSub: 'ตัวอย่างหน้าจอการใช้งานจริงของ Grow Together',
 
   // CTA Section
   readyToBuild: 'เริ่มต้นเป้าหมายแรกของคุณ',
@@ -174,15 +167,8 @@ const englishTranslations: typeof thaiTranslations = {
   mutualMotivation: 'Encouraging Community',
   mutualMotivationSub: "Explore friends' goals, send encouragement, and grow together.",
 
-  whyDifferent: 'What You Will Get',
-  unlimitedGoalsTitle: 'Set Unlimited Goals',
-  unlimitedGoalsSub: 'Create goals for study, health, finance, or personal development.',
-  oneClickTitle: 'Daily Check-in',
-  oneClickSub: 'Log progress with a single tap, maintaining consistent discipline.',
-  trackDisciplineTitle: 'Track Your Progress',
-  trackDisciplineSub: 'View stats, active streak, and check-in history all in one place.',
-  sendSupportTitle: 'Inspire Each Other',
-  sendSupportSub: 'Send encouragement to peers and grow together with the community.',
+  productPreviewTitle: 'System Overview',
+  productPreviewSub: 'Real dashboard preview of Grow Together',
 
   readyToBuild: 'Start Your First Goal',
   readyToBuildSub: 'Build good discipline through small daily actions.',

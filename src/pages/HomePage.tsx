@@ -1,6 +1,6 @@
 import { Hero } from '@/components/home/Hero'
 import { Features } from '@/components/home/Features'
-import { SocialProof } from '@/components/home/SocialProof'
+import { ProductPreview } from '@/components/home/ProductPreview'
 import { CTA } from '@/components/home/CTA'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { LanguageToggle } from '@/components/shared/LanguageToggle'
@@ -36,7 +36,7 @@ export function HomePage() {
       <main className="flex-1">
         <Hero />
         <Features />
-        <SocialProof />
+        <ProductPreview />
         <CTA />
       </main>
 
