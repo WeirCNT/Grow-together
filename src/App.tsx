@@ -7,6 +7,7 @@ import { GoalsPage } from '@/pages/GoalsPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { CommunityPage } from '@/pages/CommunityPage'
 import { ProfilePage } from '@/pages/ProfilePage'
+import { ChangePasswordPage } from '@/pages/ChangePasswordPage'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { useAuth } from '@/context/AuthContext'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -59,6 +60,7 @@ export function App() {
       <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
       <Route path="/friends" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+      <Route path="/change-password" element={<ProtectedRoute><ChangePasswordPage /></ProtectedRoute>} />
     </Routes>
   )
 }

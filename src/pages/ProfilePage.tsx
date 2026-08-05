@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { useGoals } from '@/hooks/useGoals'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -9,7 +10,7 @@ import { updateProfile, uploadAvatar, getUserSupportStats } from '@/services'
 import { useLanguage } from '@/context/LanguageContext'
 import { Avatar } from '@/components/shared/Avatar'
 import { AchievementsList } from '@/components/profile/AchievementsList'
-import { Camera, Loader2, Edit2, Heart, Users, Target, Flame } from 'lucide-react'
+import { Camera, Loader2, Edit2, Heart, Users, Target, Flame, KeyRound } from 'lucide-react'
 
 export function ProfilePage() {
   const { user, profile, refreshProfile } = useAuth()
@@ -150,9 +151,16 @@ export function ProfilePage() {
                     <span>เปลี่ยนรูปโปรไฟล์</span>
                   </Button>
 
-                  <Button variant="ghost" size="sm" onClick={() => setEditing(true)} className="gap-1.5 text-xs">
+                  <Button variant="ghost" size="sm" onClick={() => setEditing(true)} className="gap-1.5 text-xs cursor-pointer">
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>{t.edit}</span>
+                  </Button>
+
+                  <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs cursor-pointer">
+                    <Link to="/change-password">
+                      <KeyRound className="w-3.5 h-3.5 text-amber-500" />
+                      <span>เปลี่ยนรหัสผ่าน</span>
+                    </Link>
                   </Button>
                 </div>
               </div>
