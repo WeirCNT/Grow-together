@@ -53,14 +53,14 @@ export async function getCommunityGoals(): Promise<CommunityGoalWithDetails[]> {
           .single()
         return {
           ...g,
-          profile: prof ? (prof as any) : { full_name: 'เพื่อนนักศึกษา' },
+          profile: prof ? (prof as any) : { full_name: 'เพื่อนนิสิต' },
         }
       })
     )
   } else {
     goalsList = ((data as any[]) ?? []).map((g) => ({
       ...g,
-      profile: Array.isArray(g.profile) ? g.profile[0] : (g.profile || { full_name: 'เพื่อนนักศึกษา' }),
+      profile: Array.isArray(g.profile) ? g.profile[0] : (g.profile || { full_name: 'เพื่อนนิสิต' }),
     }))
   }
 

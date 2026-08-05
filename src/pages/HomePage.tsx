@@ -1,5 +1,6 @@
 import { Hero } from '@/components/home/Hero'
 import { Features } from '@/components/home/Features'
+import { SocialProof } from '@/components/home/SocialProof'
 import { CTA } from '@/components/home/CTA'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { LanguageToggle } from '@/components/shared/LanguageToggle'
@@ -13,7 +14,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="h-16 border-b border-border px-6 flex items-center justify-between max-w-7xl w-full mx-auto">
+      <header className="h-16 border-b border-white/10 px-6 flex items-center justify-between max-w-7xl w-full mx-auto backdrop-blur-xs">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg">
           <div className="w-8 h-8 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center">
             <Sprout className="w-5 h-5 text-primary-500" />
@@ -23,10 +24,10 @@ export function HomePage() {
         <div className="flex items-center gap-3">
           <LanguageToggle />
           <ThemeToggle />
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="ghost" size="sm" className="cursor-pointer">
             <Link to="/login">{t.signIn}</Link>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="cursor-pointer">
             <Link to="/register">{t.getStarted}</Link>
           </Button>
         </div>
@@ -35,10 +36,11 @@ export function HomePage() {
       <main className="flex-1">
         <Hero />
         <Features />
+        <SocialProof />
         <CTA />
       </main>
 
-      <footer className="py-6 border-t border-border text-center text-xs text-muted-foreground">
+      <footer className="py-6 border-t border-white/10 text-center text-xs text-gray-400">
         {t.brandName} — แพลตฟอร์มพัฒนาตนเองสำหรับนิสิต
       </footer>
     </div>
