@@ -12,19 +12,18 @@ Grow Together เป็นเว็บแอปพลิเคชันที่
 
 ## 📸 ตัวอย่างหน้าจอการใช้งาน (Screenshots)
 
+### Landing Page
+
 <p align="center">
   <img src="./docs/landing-page.png" alt="Grow Together Landing Page" width="900">
 </p>
+
+### Dashboard
 
 <p align="center">
   <img src="./docs/dashboard.png" alt="Grow Together Dashboard" width="900">
 </p>
 
-<p align="center">
-  <img src="./docs/community.png" alt="Grow Together Community" width="900">
-</p>
-
-> Replace the images inside the `docs/` folder with newer screenshots in the future without modifying the README.
 
 ---
 
