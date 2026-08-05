@@ -1,148 +1,117 @@
 <p align="center">
-  <img src="./docs/landing-page.png" width="900" alt="Grow Together">
+  <img src="./docs/landing-page.png" alt="Grow Together Landing Page" width="900">
 </p>
+
 # 🌱 Grow Together
 
-> **แพลตฟอร์มเพื่อการพัฒนาตนเองผ่านการตั้งเป้าหมายและการสนับสนุนจากเพื่อน**
+> **แพลตฟอร์มสำหรับนิสิต เพื่อการพัฒนาตนเองผ่านการตั้งเป้าหมาย เช็กอินทุกวัน และสร้างวินัยร่วมกัน**
 
-Grow Together เป็นเว็บแอปพลิเคชันที่ช่วยให้ผู้ใช้สามารถตั้งเป้าหมาย ติดตามความก้าวหน้า และได้รับกำลังใจจากเพื่อน เพื่อสร้างแรงจูงใจในการพัฒนาตนเองอย่างต่อเนื่อง
-
----
-
-## ✨ แนวคิดของโครงงาน
-
-หลายคนเริ่มต้นทำเป้าหมายได้ดี แต่ขาดแรงจูงใจในการทำต่อ
-
-Grow Together จึงถูกพัฒนาขึ้นเพื่อสร้างสภาพแวดล้อมที่ผู้ใช้สามารถ
-
-- 🎯 ตั้งเป้าหมาย
-- 📈 ติดตามความก้าวหน้า
-- ❤️ ได้รับกำลังใจจากเพื่อน
-- 🤝 พัฒนาตนเองไปพร้อมกับชุมชน
-
-โดยเน้นความเรียบง่าย ใช้งานง่าย และไม่มี Social Feed ที่รบกวนสมาธิ
+Grow Together เป็นเว็บแอปพลิเคชันที่ช่วยให้นิสิตสามารถตั้งเป้าหมาย ติดตามความก้าวหน้า และได้รับกำลังใจจากเพื่อนอย่างสม่ำเสมอ เพื่อสร้างแรงจูงใจในการพัฒนาตนเองวันละนิดแบบยั่งยืน
 
 ---
 
-# 🚀 ฟีเจอร์หลัก
+## 📸 ตัวอย่างหน้าจอการใช้งาน (Screenshots)
 
-### 👤 ระบบสมาชิก
+<p align="center">
+  <img src="./docs/landing-page.png" alt="Grow Together Landing Page" width="900">
+</p>
 
-- สมัครสมาชิก
-- เข้าสู่ระบบ
-- เปลี่ยนรหัสผ่าน
-- จัดการข้อมูลส่วนตัว
+<p align="center">
+  <img src="./docs/dashboard.png" alt="Grow Together Dashboard" width="900">
+</p>
 
----
+<p align="center">
+  <img src="./docs/community.png" alt="Grow Together Community" width="900">
+</p>
 
-### 🎯 ระบบเป้าหมาย
-
-- เพิ่มเป้าหมาย
-- แก้ไขเป้าหมาย
-- ลบเป้าหมาย
-- เช็กอินประจำวัน
-- ติดตามความสำเร็จ
+> Replace the images inside the `docs/` folder with newer screenshots in the future without modifying the README.
 
 ---
 
-### 👥 ระบบเพื่อน
+## ✨ แนวคิดของโครงการ
 
-- เพิ่มเพื่อน
-- ดูเป้าหมายของเพื่อน
-- สนับสนุนเป้าหมายของเพื่อน
+หลายคนเริ่มต้นตั้งเป้าหมายได้ดี แต่ขาดความต่อเนื่องเนื่องจากไม่มีพื้นที่สำหรับส่งเสริมวินัย Grow Together ถูกพัฒนาขึ้นเพื่อสร้างสภาพแวดล้อมที่ช่วยให้นิสิต:
+
+- 🎯 **ตั้งเป้าหมายได้อิสระ**: ด้านการเรียน สุขภาพ การเงิน หรือการพัฒนาตนเอง
+- 📈 **ติดตามคะแนนวินัย (Discipline Score)**: และสถิติการเช็กอินย้อนหลัง 30 วันแบบ Heatmap
+- ❤️ **ส่งกำลังใจวันละครั้ง**: ช่วยสนับสนุนเป้าหมายของเพื่อนในชุมชนอย่างสงบและสม่ำเสมอ
+- 🤝 **เติบโตไปพร้อมกัน**: โดยไม่มีโซเชียลฟีดที่รบกวนสมาธิ
 
 ---
 
-### ❤️ ระบบส่งกำลังใจ
+## 🚀 ฟีเจอร์หลัก
 
+### 👤 ระบบบัญชีผู้ใช้ & ความปลอดภัย
+- สมัครสมาชิกด้วยรหัสนิสิตและรหัสผ่าน
+- เข้าสู่ระบบ และ ออกจากระบบ
+- เปลี่ยนรหัสผ่านพร้อมระบบเปิด-ปิดการมองเห็นรหัสผ่าน (Show / Hide Password)
+- จัดการและอัปโหลดรูปโปรไฟล์
+
+### 🎯 ระบบจัดการเป้าหมาย
+- สร้าง แก้ไข และลบเป้าหมาย
+- เช็กอินประจำวันด้วยคลิกเดียว
+- ติดตามวันทำต่อเนื่องสูงสุด (Best Streak)
+- แสดงคะแนนวินัย (Discipline Score) 0–100%
+
+### 👥 ระบบชุมชน & ผู้ส่งกำลังใจล่าสุด
+- ดูเป้าหมายของเพื่อนนิสิตในระบบ
 - ส่งกำลังใจได้วันละ 1 ครั้งต่อเป้าหมาย
-- นับจำนวนผู้ส่งกำลังใจ
-- แสดงผู้ส่งกำลังใจล่าสุด
-- แจ้งเตือนเมื่อได้รับกำลังใจ
+- แสดงจำนวนผู้ส่งกำลังใจสะสม (Lifetime Support Count)
+- แสดงแถบรูปโปรไฟล์ซ้อนกัน (Overlapping Avatars) และรายนามผู้ส่งกำลังใจล่าสุด (Recent Supporters)
+- การแจ้งเตือนเมื่อมีเพื่อนส่งกำลังใจให้เป้าหมาย
 
 ---
 
-### 👤 โปรไฟล์
+## 🛠 เทคโนโลยีที่ใช้
 
-- รูปโปรไฟล์
-- ชื่อผู้ใช้
-- รหัสนักศึกษา
-- เปลี่ยนรหัสผ่าน
+### Frontend
+- **Framework**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Radix UI Primitives
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Routing**: React Router v8 (SPA with Vercel Rewrites)
 
----
-
-# 🛠 เทคโนโลยีที่ใช้
-
-## Frontend
-
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Router
-- Framer Motion
-
-## Backend
-
-- Supabase Authentication
-- Supabase Database
-- Row Level Security (RLS)
+### Backend & Database
+- **Authentication**: Supabase Auth (JWT & Password Hashing)
+- **Database**: PostgreSQL (Supabase) with Row Level Security (RLS)
+- **Storage**: Supabase Storage Buckets (Avatars)
 
 ---
 
-# 🗄 โครงสร้างฐานข้อมูล
-
-ตารางหลัก
-
-- profiles
-- goals
-- friends
-- supports
-- daily_checkins
-
-ความสัมพันธ์
+## 🗄 โครงสร้างฐานข้อมูล (Database Schema)
 
 ```
-profiles
+profiles (ข้อมูลโปรไฟล์นิสิต)
    │
-   ├── goals
-   ├── friends
-   └── supports
-
-goals
-   ├── daily_checkins
-   └── supports
+   ├── goals (เป้าหมายนิสิต)
+   │     ├── daily_checkins (สถิติการเช็กอินรายวัน)
+   │     └── supports (บันทึกการส่งกำลังใจรายวัน)
+   │
+   ├── supports (กำลังใจที่ส่งให้เพื่อน)
+   └── notifications (การแจ้งเตือนกำลังใจ)
 ```
 
 ---
 
-# 🔒 ความปลอดภัย
-
-- Supabase Authentication
-- Row Level Security (RLS)
-- Protected Routes
-- Password Hashing
-- Session Management
-
----
-
-# 💻 การติดตั้ง
+## 💻 การติดตั้งและเริ่มต้นใช้งาน local
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/WeirCNT/Grow-together.git
-
 cd Grow-together
 
+# 2. ติดตั้ง Dependencies
 npm install
 
+# 3. รัน Development Server
 npm run dev
 ```
 
 ---
 
-# ⚙️ Environment Variables
+## ⚙️ Environment Variables
 
-สร้างไฟล์ `.env`
+สร้างไฟล์ `.env` ใน root directory:
 
 ```env
 VITE_SUPABASE_URL=YOUR_SUPABASE_URL
@@ -151,47 +120,20 @@ VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 
 ---
 
-# 🌐 เว็บไซต์
+## 🌐 Live Application
 
-**Live Demo**
-
-https://grow-together-puce.vercel.app
+**Production URL**: [https://grow-together-puce.vercel.app](https://grow-together-puce.vercel.app)
 
 ---
 
-# 📸 ตัวอย่างหน้าจอ
+## 👨‍💻 ผู้พัฒนา
 
-> เพิ่มภาพหน้าจอของระบบในภายหลัง
-
-- Landing Page
-- Dashboard
-- Goals
-- Community
-- Profile
+**ส.ณ.ชนาธิป ชูคันหอม (Weir)**  
+โครงการพัฒนามนุษย์  
+ศูนย์พุทธศาสตร์ศึกษา DCI
 
 ---
 
-# 🔮 แผนพัฒนาต่อ
+## 📄 License
 
-- Forgot Password
-- ระบบ Badge
-- ระบบ Achievement
-- Weekly Report
-- Mobile Application
-- AI Goal Assistant
-
----
-
-# 👨‍💻 ผู้พัฒนา
-
-**ชนาธิป (Weir)**
-
-โครงงานพัฒนามนุษย์
-
-มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย
-
----
-
-# 📄 License
-
-MIT License
+MIT License © 2026 Grow Together
