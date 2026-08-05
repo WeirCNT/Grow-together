@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GoalCard } from '@/components/goals/GoalCard'
@@ -10,6 +10,10 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import type { GoalWithCheckins } from '@/types'
 import { useLanguage } from '@/context/LanguageContext'
 
+const logEvent = (msg: string, ...args: any[]) => {
+  console.log(`[${new Date().toISOString()}] [GoalsPage] ${msg}`, ...args)
+}
+
 export function GoalsPage() {
   const { user } = useAuth()
   const { t } = useLanguage()
@@ -17,12 +21,22 @@ export function GoalsPage() {
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingGoal, setEditingGoal] = useState<GoalWithCheckins | null>(null)
+
+  useEffect(() => {
+    logEvent(`GoalsPage mounted/updated. User ID: ${user?.id ?? 'null'}, Goals count: ${goals.length}, Loading: ${loading}`)
+    return () => {
+      logEvent('GoalsPage unmounting')
+    }
+  }, [user?.id, goals.length, loading])
+
   const handleCreateOrUpdate = async (title: string, description: string) => {
+    logEvent(`handleCreateOrUpdate triggered. editingGoal: ${editingGoal?.id ?? 'null'}, title: "${title}"`)
     if (editingGoal) {
       await editGoal(editingGoal.id, { title, description: description || null })
     } else {
       await addGoal(title, description)
     }
+    logEvent('handleCreateOrUpdate complete')
   }
 
   return (
@@ -34,6 +48,7 @@ export function GoalsPage() {
         </div>
         <Button
           onClick={() => {
+            logEvent('Add Goal button clicked')
             setEditingGoal(null)
             setFormOpen(true)
           }}
@@ -52,6 +67,7 @@ export function GoalsPage() {
           description={t.noGoalsSub}
           actionLabel={t.createNewGoal}
           onAction={() => {
+            logEvent('EmptyState action clicked')
             setEditingGoal(null)
             setFormOpen(true)
           }}
@@ -63,12 +79,19 @@ export function GoalsPage() {
               key={goal.id}
               goal={goal}
               isCheckedIn={isCheckedInToday(goal)}
-              onCheckIn={() => checkin(goal.id)}
+              onCheckIn={() => {
+                logEvent(`CheckIn triggered for goalId: ${goal.id}`)
+                checkin(goal.id)
+              }}
               onEdit={() => {
+                logEvent(`Edit triggered for goalId: ${goal.id}`)
                 setEditingGoal(goal)
                 setFormOpen(true)
               }}
-              onDelete={() => removeGoal(goal.id)}
+              onDelete={() => {
+                logEvent(`Delete triggered for goalId: ${goal.id}`)
+                removeGoal(goal.id)
+              }}
             />
           ))}
         </div>
@@ -76,7 +99,10 @@ export function GoalsPage() {
 
       <GoalForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(open) => {
+          logEvent(`GoalForm onOpenChange: ${open}`)
+          setFormOpen(open)
+        }}
         onSubmit={handleCreateOrUpdate}
         initialGoal={editingGoal}
       />

@@ -6,6 +6,10 @@ import { useLanguage } from '@/context/LanguageContext'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/shared/Avatar'
 
+const logEvent = (msg: string, ...args: any[]) => {
+  console.log(`[${new Date().toISOString()}] [Sidebar] ${msg}`, ...args)
+}
+
 export function Sidebar() {
   const location = useLocation()
   const { profile, signOut } = useAuth()
@@ -35,6 +39,7 @@ export function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
+              onClick={() => logEvent(`Nav Link clicked to: "${item.path}" (current: "${location.pathname}")`)}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
                 isActive
@@ -60,7 +65,10 @@ export function Sidebar() {
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive px-3 cursor-pointer"
-            onClick={signOut}
+            onClick={() => {
+              logEvent('SignOut button clicked in Sidebar')
+              signOut()
+            }}
           >
             <LogOut className="w-4 h-4" />
             {t.signOut}

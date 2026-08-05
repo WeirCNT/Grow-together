@@ -3,6 +3,10 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { Profile } from '@/types'
 
+const logEvent = (msg: string, ...args: any[]) => {
+  console.log(`[${new Date().toISOString()}] [AuthContext] ${msg}`, ...args)
+}
+
 interface AuthContextType {
   user: User | null
   profile: Profile | null
@@ -21,34 +25,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
+    logEvent(`fetchProfile called for userId: ${userId}`)
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single()
+    if (error) {
+      logEvent(`fetchProfile error: ${error.message}`)
+    } else {
+      logEvent(`fetchProfile success:`, data)
+    }
     setProfile((data as Profile) ?? null)
   }
 
   const refreshProfile = async () => {
+    logEvent(`refreshProfile called. Current user ID: ${user?.id}`)
     if (user) {
       await fetchProfile(user.id)
     }
   }
 
   useEffect(() => {
+    logEvent('AuthProvider useEffect mounted. Initializing session lookup...')
+
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      logEvent('getSession starting...')
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) logEvent(`getSession error: ${error.message}`)
+      logEvent(`getSession returned session user: ${session?.user?.id ?? 'none'}`)
+      
       setUser(session?.user ?? null)
       if (session?.user) {
         await fetchProfile(session.user.id)
       }
       setLoading(false)
+      logEvent('getSession completed, loading set to false')
     }
 
     getSession()
 
+    logEvent('Attaching supabase.auth.onAuthStateChange listener...')
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        logEvent(`onAuthStateChange event fired: "${event}", session user: ${session?.user?.id ?? 'none'}`)
         setUser(session?.user ?? null)
         if (session?.user) {
           await fetchProfile(session.user.id)
@@ -56,16 +76,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(null)
         }
         setLoading(false)
+        logEvent(`onAuthStateChange handler completed for event: "${event}"`)
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      logEvent('Unsubscribing onAuthStateChange listener...')
+      subscription.unsubscribe()
+    }
   }, [])
 
   const getAuthEmail = (studentId: string) =>
     `student-${studentId.trim().toLowerCase()}@auth.growtogether.local`
 
   const signUp = async (studentId: string, fullName: string, password: string) => {
+    logEvent(`signUp called for studentId: ${studentId}`)
     const normalizedStudentId = studentId.trim().toUpperCase()
     const { error } = await supabase.auth.signUp({
       email: getAuthEmail(normalizedStudentId),
@@ -77,22 +102,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       },
     })
-    if (error) throw error
+    if (error) {
+      logEvent(`signUp error: ${error.message}`)
+      throw error
+    }
+    logEvent('signUp success')
   }
 
   const signIn = async (studentId: string, password: string) => {
+    logEvent(`signIn called for studentId: ${studentId}`)
     const { error } = await supabase.auth.signInWithPassword({
       email: getAuthEmail(studentId.trim().toUpperCase()),
       password,
     })
-    if (error) throw error
+    if (error) {
+      logEvent(`signIn error: ${error.message}`)
+      throw error
+    }
+    logEvent('signIn success')
   }
 
   const signOut = async () => {
+    logEvent('signOut called')
     const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    if (error) {
+      logEvent(`signOut error: ${error.message}`)
+      throw error
+    }
     setUser(null)
     setProfile(null)
+    logEvent('signOut completed')
   }
 
   return (
