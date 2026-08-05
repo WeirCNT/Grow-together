@@ -37,6 +37,36 @@ export function formatRelativeDate(date: string | Date): string {
   return formatDate(date)
 }
 
+export function formatRelativeEncouragedDate(date: string | Date, lang: 'th' | 'en' = 'th'): string {
+  const now = new Date()
+  const todayStr = now.toISOString().split('T')[0]
+  const target = new Date(date)
+  const targetStr = target.toISOString().split('T')[0]
+
+  if (targetStr === todayStr) {
+    return lang === 'th' ? 'วันนี้' : 'Today'
+  }
+
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+  const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+  if (targetStr === yesterdayStr) {
+    return lang === 'th' ? 'เมื่อวาน' : 'Yesterday'
+  }
+
+  const diffMs = now.getTime() - target.getTime()
+  const diffDays = Math.floor(diffMs / 86400000)
+  if (diffDays < 7 && diffDays > 0) {
+    return lang === 'th' ? `${diffDays} วันที่แล้ว` : `${diffDays} days ago`
+  }
+
+  return target.toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', {
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
 export function getTodayISO(): string {
   return new Date().toISOString().split('T')[0]
 }

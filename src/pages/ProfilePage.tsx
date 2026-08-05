@@ -1,15 +1,15 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useGoals } from '@/hooks/useGoals'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { formatDate } from '@/lib/utils'
-import { updateProfile, uploadAvatar } from '@/services'
+import { updateProfile, uploadAvatar, getUserSupportStats } from '@/services'
 import { useLanguage } from '@/context/LanguageContext'
 import { Avatar } from '@/components/shared/Avatar'
 import { AchievementsList } from '@/components/profile/AchievementsList'
-import { Camera, Loader2, Edit2 } from 'lucide-react'
+import { Camera, Loader2, Edit2, Heart, Users, Target, Flame } from 'lucide-react'
 
 export function ProfilePage() {
   const { user, profile, refreshProfile } = useAuth()
@@ -21,8 +21,15 @@ export function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [supportStats, setSupportStats] = useState({ encouragementsReceived: 0, encouragementsGiven: 0 })
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (user?.id) {
+      getUserSupportStats(user.id).then(setSupportStats)
+    }
+  }, [user?.id])
 
   const handleSave = async () => {
     if (!user || !name.trim()) return
@@ -154,21 +161,51 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Top Profile Stat Cards */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Top Profile Stat Cards (4 Grid) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <Card className="shadow-xs border-border/80">
-          <CardHeader>
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t.activeGoals}</CardTitle>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+              <span>{t.activeGoals}</span>
+              <Target className="w-3.5 h-3.5 text-primary-500" />
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-extrabold text-foreground">{goals.length}</CardContent>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-foreground">{goals.length}</CardContent>
         </Card>
 
         <Card className="shadow-xs border-border/80">
-          <CardHeader>
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t.highestStreak}</CardTitle>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+              <span>{t.highestStreak}</span>
+              <Flame className="w-3.5 h-3.5 text-amber-500" />
+            </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-extrabold text-foreground">
-            {goals.reduce((m, g) => Math.max(m, g.streak), 0)} <span className="text-sm font-normal text-muted-foreground">{t.days}</span>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-foreground">
+            {goals.reduce((m, g) => Math.max(m, g.streak), 0)} <span className="text-xs font-normal text-muted-foreground">{t.days}</span>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs border-border/80">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+              <span>{t.encouragementsReceived}</span>
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-rose-500 dark:text-rose-400">
+            {supportStats.encouragementsReceived.toLocaleString()}
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xs border-border/80">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+              <span>{t.encouragementsGiven}</span>
+              <Users className="w-3.5 h-3.5 text-blue-500" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-blue-500 dark:text-blue-400">
+            {supportStats.encouragementsGiven.toLocaleString()}
           </CardContent>
         </Card>
       </div>

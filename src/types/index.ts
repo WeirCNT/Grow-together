@@ -32,7 +32,8 @@ export interface Support {
   id: string
   goal_id: string
   from_user: string
-  message: string
+  date?: string
+  message?: string
   created_at: string
 }
 
@@ -48,6 +49,33 @@ export interface FriendWithProfile extends Friend {
 
 export interface SupportWithProfile extends Support {
   profile: Profile
+}
+
+export interface SupporterInfo {
+  user_id: string
+  profile: Profile
+  last_encouraged_at: string
+  total_encouragements: number
+}
+
+export interface GoalSupportSummary {
+  totalCount: number
+  uniqueSupportersCount: number
+  userHasEncouragedToday: boolean
+  userTotalEncouragements: number
+  recentSupporters: SupporterInfo[]
+}
+
+export interface AppNotification {
+  id: string
+  user_id: string
+  from_user: string
+  goal_id: string
+  message: string
+  is_read: boolean
+  created_at: string
+  from_profile?: Profile
+  goal_title?: string
 }
 
 export interface Database {
@@ -77,6 +105,11 @@ export interface Database {
         Row: Support
         Insert: Omit<Support, 'id' | 'created_at'>
         Update: Partial<Omit<Support, 'id' | 'created_at'>>
+      }
+      notifications: {
+        Row: AppNotification
+        Insert: Omit<AppNotification, 'id' | 'created_at'>
+        Update: Partial<Omit<AppNotification, 'id' | 'created_at'>>
       }
     }
   }

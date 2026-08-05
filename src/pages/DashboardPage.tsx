@@ -10,6 +10,7 @@ import { DailyMotivationCard } from '@/components/dashboard/DailyMotivationCard'
 import { TodayFocusCard } from '@/components/dashboard/TodayFocusCard'
 import { OnboardingChecklist } from '@/components/dashboard/OnboardingChecklist'
 import { WeeklySummaryCard } from '@/components/dashboard/WeeklySummaryCard'
+import { EncouragementNotificationsCard } from '@/components/dashboard/EncouragementNotificationsCard'
 import { calculateDisciplineScore } from '@/services/checkinService'
 import { useCountUp } from '@/hooks/useCountUp'
 
@@ -51,16 +52,19 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* 1. Onboarding Guided Checklist (for new/setup users) */}
+      {/* 1. Encouragement Notifications (When friends encourage user's goals) */}
+      <EncouragementNotificationsCard />
+
+      {/* 2. Onboarding Guided Checklist (for new/setup users) */}
       <OnboardingChecklist profile={profile} goals={goals} />
 
-      {/* 2. Daily Motivation Card */}
+      {/* 3. Daily Motivation Card */}
       <DailyMotivationCard />
 
-      {/* 3. Today's Focus Card (Answers: What should I do today?) */}
+      {/* 4. Today's Focus Card (Answers: What should I do today?) */}
       <TodayFocusCard goals={goals} onCheckIn={checkin} />
 
-      {/* 4. Top Stat Cards (Answers: How am I doing?) */}
+      {/* 5. Top Stat Cards (Answers: How am I doing?) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Goals */}
         <Card className="flex flex-col justify-between h-full shadow-xs border-border/80 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200">
@@ -125,10 +129,10 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* 5. Weekly Summary Card */}
+      {/* 6. Weekly Summary Card */}
       <WeeklySummaryCard goals={goals} />
 
-      {/* 6. GitHub-style 30-Day Check-in Heatmap */}
+      {/* 7. GitHub-style 30-Day Check-in Heatmap */}
       <CheckinHeatmap checkins={allCheckins} maxStreak={maxStreak} />
     </div>
   )
