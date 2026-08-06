@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useAuth } from '@/context/AuthContext'
 import { useGoals } from '@/hooks/useGoals'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -10,11 +10,12 @@ import { updateProfile, uploadAvatar, getUserSupportStats } from '@/services'
 import { useLanguage } from '@/context/LanguageContext'
 import { Avatar } from '@/components/shared/Avatar'
 import { AchievementsList } from '@/components/profile/AchievementsList'
-import { Camera, Loader2, Edit2, Heart, Users, Target, Flame, KeyRound } from 'lucide-react'
+import { Camera, Loader2, Edit2, Heart, Users, Target, Calendar, KeyRound } from 'lucide-react'
 
 export function ProfilePage() {
   const { user, profile, refreshProfile } = useAuth()
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const { goals } = useGoals(user?.id)
 
   const [name, setName] = useState(profile?.full_name || '')
@@ -25,6 +26,9 @@ export function ProfilePage() {
   const [supportStats, setSupportStats] = useState({ encouragementsReceived: 0, encouragementsGiven: 0 })
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const completedGoalsCount = goals.filter((g) => g.completed).length
+  const totalCheckinsCount = goals.flatMap((g) => g.checkins).length
 
   useEffect(() => {
     if (user?.id) {
@@ -169,35 +173,17 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Top Profile Stat Cards (4 Grid) */}
+      {/* Top Profile Stat Cards (4 Grid with Clickable/Hoverable States) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <Card className="shadow-xs border-border/80">
+        {/* Card 1: Encouragements Received */}
+        <Card
+          onClick={() => navigate('/community')}
+          className="shadow-xs border-border/80 hover:border-rose-500/50 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
+        >
           <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-              <span>{t.activeGoals}</span>
-              <Target className="w-3.5 h-3.5 text-primary-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 text-xl font-extrabold text-foreground">{goals.length}</CardContent>
-        </Card>
-
-        <Card className="shadow-xs border-border/80">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
-              <span>{t.highestStreak}</span>
-              <Flame className="w-3.5 h-3.5 text-amber-500" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 text-xl font-extrabold text-foreground">
-            {goals.reduce((m, g) => Math.max(m, g.streak), 0)} <span className="text-xs font-normal text-muted-foreground">{t.days}</span>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xs border-border/80">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between group-hover:text-rose-500 transition-colors">
               <span>{t.encouragementsReceived}</span>
-              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20" />
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20 group-hover:scale-110 transition-transform" />
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0 text-xl font-extrabold text-rose-500 dark:text-rose-400">
@@ -205,15 +191,51 @@ export function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-xs border-border/80">
+        {/* Card 2: Encouragements Given */}
+        <Card
+          onClick={() => navigate('/community')}
+          className="shadow-xs border-border/80 hover:border-blue-500/50 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
+        >
           <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between group-hover:text-blue-500 transition-colors">
               <span>{t.encouragementsGiven}</span>
-              <Users className="w-3.5 h-3.5 text-blue-500" />
+              <Users className="w-3.5 h-3.5 text-blue-500 group-hover:scale-110 transition-transform" />
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0 text-xl font-extrabold text-blue-500 dark:text-blue-400">
             {supportStats.encouragementsGiven.toLocaleString()}
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Completed Goals */}
+        <Card
+          onClick={() => navigate('/goals')}
+          className="shadow-xs border-border/80 hover:border-emerald-500/50 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
+        >
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between group-hover:text-emerald-500 transition-colors">
+              <span>{t.completedGoals}</span>
+              <Target className="w-3.5 h-3.5 text-emerald-500 group-hover:scale-110 transition-transform" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
+            {completedGoalsCount.toLocaleString()}
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Total Check-ins */}
+        <Card
+          onClick={() => navigate('/dashboard')}
+          className="shadow-xs border-border/80 hover:border-amber-500/50 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group"
+        >
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between group-hover:text-amber-500 transition-colors">
+              <span>{t.totalCheckins}</span>
+              <Calendar className="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0 text-xl font-extrabold text-amber-500 dark:text-amber-400">
+            {totalCheckinsCount.toLocaleString()}
           </CardContent>
         </Card>
       </div>

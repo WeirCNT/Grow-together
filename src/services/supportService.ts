@@ -2,6 +2,15 @@ import { supabase } from '@/lib/supabase'
 import type { Profile, SupporterInfo, GoalSupportSummary, AppNotification } from '@/types'
 import { getTodayISO } from '@/lib/utils'
 
+export interface GoalEncouragement {
+  id: string
+  goal_id: string
+  from_user: string
+  message: string
+  created_at: string
+  profile: Profile
+}
+
 /**
  * Retrieves full encouragement stats for a specific goal:
  * - Total encouragements count (lifetime)
@@ -80,7 +89,7 @@ async function processRecentSupportersSummary(
   // Group by unique supporter and record total count & latest encouragement timestamp (created_at)
   const supporterMap = new Map<
     string,
-    { count: number; lastEncouragedAt: string; profile?: Profile }
+    { count: number; lastEncouragedAt: string; profile?: Profile; lastMessage?: string }
   >()
 
   rawSupports.forEach((s) => {
@@ -88,6 +97,7 @@ async function processRecentSupportersSummary(
     if (!uid) return
     const prof = Array.isArray(s.profile) ? s.profile[0] : s.profile
     const timestamp = s.created_at || new Date().toISOString()
+    const msg = s.message || '❤️ เป็นกำลังใจให้นะ'
     const existing = supporterMap.get(uid)
 
     if (existing) {
@@ -95,11 +105,13 @@ async function processRecentSupportersSummary(
       if (!existing.profile && prof) existing.profile = prof
       if (new Date(timestamp).getTime() > new Date(existing.lastEncouragedAt).getTime()) {
         existing.lastEncouragedAt = timestamp
+        existing.lastMessage = msg
       }
     } else {
       supporterMap.set(uid, {
         count: 1,
         lastEncouragedAt: timestamp,
+        lastMessage: msg,
         profile: prof || { id: uid, full_name: 'เพื่อนนิสิต', student_id: '', avatar: null, created_at: '' },
       })
     }
@@ -110,6 +122,7 @@ async function processRecentSupportersSummary(
     user_id: uid,
     total_encouragements: data.count,
     last_encouraged_at: data.lastEncouragedAt,
+    last_message: data.lastMessage || '❤️ เป็นกำลังใจให้นะ',
     profile: data.profile!,
   }))
 
@@ -140,6 +153,7 @@ async function processRecentSupportersSummary(
     profile: item.profile,
     last_encouraged_at: item.last_encouraged_at,
     total_encouragements: item.total_encouragements,
+    last_message: item.last_message,
   }))
 
   return {
@@ -148,6 +162,72 @@ async function processRecentSupportersSummary(
     userHasEncouragedToday,
     userTotalEncouragements,
     recentSupporters,
+  }
+}
+
+/**
+ * Fetches all encouragement messages for a specific goal (newest first).
+ */
+export async function getGoalEncouragements(goalId: string): Promise<GoalEncouragement[]> {
+  try {
+    const { data, error } = await supabase
+      .from('supports')
+      .select('id, goal_id, from_user, message, created_at, profile:profiles!supports_from_user_fkey(id, student_id, full_name, avatar)')
+      .eq('goal_id', goalId)
+      .order('created_at', { ascending: false })
+
+    if (error || !data) {
+      const { data: rawData } = await supabase
+        .from('supports')
+        .select('id, goal_id, from_user, message, created_at')
+        .eq('goal_id', goalId)
+        .order('created_at', { ascending: false })
+
+      if (!rawData || rawData.length === 0) return []
+
+      const userIds = Array.from(new Set(rawData.map((s) => s.from_user)))
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, student_id, full_name, avatar, created_at')
+        .in('id', userIds)
+
+      const profMap = new Map((profs || []).map((p) => [p.id, p as Profile]))
+
+      return rawData.map((s) => ({
+        id: s.id,
+        goal_id: s.goal_id,
+        from_user: s.from_user,
+        message: s.message || '❤️ เป็นกำลังใจให้นะ',
+        created_at: s.created_at,
+        profile: profMap.get(s.from_user) || {
+          id: s.from_user,
+          full_name: 'เพื่อนนิสิต',
+          student_id: '',
+          avatar: null,
+          created_at: '',
+        },
+      }))
+    }
+
+    return data.map((s: any) => ({
+      id: s.id,
+      goal_id: s.goal_id,
+      from_user: s.from_user,
+      message: s.message || '❤️ เป็นกำลังใจให้นะ',
+      created_at: s.created_at,
+      profile: Array.isArray(s.profile)
+        ? s.profile[0]
+        : s.profile || {
+            id: s.from_user,
+            full_name: 'เพื่อนนิสิต',
+            student_id: '',
+            avatar: null,
+            created_at: '',
+          },
+    }))
+  } catch (err) {
+    console.error('Failed to fetch goal encouragements:', err)
+    return []
   }
 }
 

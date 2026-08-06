@@ -36,6 +36,15 @@ export interface Support {
   created_at: string
 }
 
+export interface GoalEncouragement {
+  id: string
+  goal_id: string
+  from_user: string
+  message: string
+  created_at: string
+  profile: Profile
+}
+
 export interface GoalWithCheckins extends Goal {
   checkins: DailyCheckin[]
   streak: number
@@ -55,6 +64,7 @@ export interface SupporterInfo {
   profile: Profile
   last_encouraged_at: string
   total_encouragements: number
+  last_message?: string
 }
 
 export interface GoalSupportSummary {

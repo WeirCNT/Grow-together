@@ -124,7 +124,18 @@ const thaiTranslations = {
   loadMore: 'โหลดเพิ่มเติม',
   viewAll: 'ดูทั้งหมด',
   showLess: 'แสดงน้อยลง',
-  readMore: 'ดูเพิ่มเติม',
+  readMore: 'อ่านเพิ่มเติม',
+
+  // Wall of Encouragement System
+  latestEncouragements: '❤️ กำลังใจล่าสุด',
+  noEncouragementsYet: '❤️ ยังไม่มีข้อความกำลังใจ',
+  noEncouragementsSub: 'เมื่อมีเพื่อนส่งกำลังใจ ข้อความจะแสดงที่นี่',
+  viewAllArrow: 'ดูทั้งหมด →',
+  wallOfEncouragementTitle: '❤️ กำแพงกำลังใจ',
+  wallOfEncouragementSub: 'อ่านข้อความดี ๆ จากเพื่อนที่ส่งกำลังใจให้คุณ',
+  pinnedEncouragement: '📌 กำลังใจที่ปักหมุด',
+  pinMessage: 'ปักหมุด',
+  unpinMessage: 'ถอนการปักหมุด',
 
   // Profile Page
   myProfile: 'โปรไฟล์ของฉัน',
@@ -263,6 +274,17 @@ const englishTranslations: typeof thaiTranslations = {
   showLess: 'Show Less',
   readMore: 'Read more',
 
+  latestEncouragements: '❤️ Latest Encouragements',
+  noEncouragementsYet: '❤️ No encouragements yet',
+  noEncouragementsSub: 'When friends send encouragement, messages will appear here.',
+  viewAllArrow: 'View All →',
+  wallOfEncouragementTitle: '❤️ Wall of Encouragement',
+  wallOfEncouragementSub: 'Read uplifting notes from friends supporting you',
+  pinnedEncouragement: '📌 Pinned Encouragement',
+  pinMessage: 'Pin',
+  unpinMessage: 'Unpin',
+
+  // Profile Page
   myProfile: 'My Profile',
   editProfile: 'Edit Profile',
   activeGoals: 'Active Goals',

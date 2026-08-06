@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { Heart, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,8 @@ import { formatRelativeDate } from '@/lib/utils'
 export function EncouragementNotificationsCard() {
   const { user } = useAuth()
   const { t } = useLanguage()
+  const navigate = useNavigate()
+
   const [notifications, setNotifications] = useState<AppNotification[]>([])
   const [showAll, setShowAll] = useState(false)
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({})
@@ -26,8 +29,15 @@ export function EncouragementNotificationsCard() {
 
   const visibleNotifications = showAll ? notifications : notifications.slice(0, 5)
 
-  const toggleExpandMessage = (id: string) => {
+  const toggleExpandMessage = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
     setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const handleNotificationClick = (n: AppNotification) => {
+    if (n.goal_id) {
+      navigate('/goals')
+    }
   }
 
   return (
@@ -64,7 +74,8 @@ export function EncouragementNotificationsCard() {
           return (
             <div
               key={n.id}
-              className="flex items-start gap-3 p-3 rounded-xl bg-background/80 border border-border/60 text-xs transition-all duration-150"
+              onClick={() => handleNotificationClick(n)}
+              className="flex items-start gap-3 p-3 rounded-xl bg-background/80 border border-border/60 text-xs transition-all duration-150 hover:bg-background hover:border-primary-500/30 cursor-pointer"
             >
               <Avatar
                 src={n.from_profile?.avatar}
@@ -85,8 +96,8 @@ export function EncouragementNotificationsCard() {
 
                 <div className="pt-0.5">
                   <p
-                    onClick={() => toggleExpandMessage(n.id)}
-                    className={`text-xs text-rose-500 dark:text-rose-400 font-semibold cursor-pointer ${
+                    onClick={(e) => toggleExpandMessage(n.id, e)}
+                    className={`text-xs text-rose-500 dark:text-rose-400 font-semibold ${
                       isExpanded ? '' : 'line-clamp-2'
                     }`}
                   >

@@ -105,6 +105,7 @@ export function CommunityPage() {
         const updatedUserTotal = current.userTotalEncouragements + 1
         const updatedTotal = current.totalCount + 1
         const nowISO = new Date().toISOString()
+        const sentMessage = customMessage.trim() || '❤️ เป็นกำลังใจให้นะ'
 
         // Update or insert current user into recent supporters list
         const existingSupporters = [...current.recentSupporters]
@@ -114,6 +115,7 @@ export function CommunityPage() {
           existingSupporters[userIndex] = {
             ...existingSupporters[userIndex],
             last_encouraged_at: nowISO,
+            last_message: sentMessage,
             total_encouragements: existingSupporters[userIndex].total_encouragements + 1,
           }
         } else if (profile) {
@@ -121,6 +123,7 @@ export function CommunityPage() {
             user_id: user.id,
             profile,
             last_encouraged_at: nowISO,
+            last_message: sentMessage,
             total_encouragements: 1,
           })
         }
@@ -505,19 +508,18 @@ export function CommunityPage() {
                           <span className="font-bold text-sm text-foreground truncate">
                             {supporter.profile?.full_name || 'เพื่อนนิสิต'}
                           </span>
+                          <span className="text-[10px] text-muted-foreground shrink-0 font-normal">
+                            {formatRelativeEncouragedDate(supporter.last_encouraged_at, language)}
+                          </span>
                         </div>
 
-                        <div className="text-xs text-muted-foreground flex flex-col gap-0.5 pt-0.5">
-                          <p className="flex items-center gap-1 text-[11px]">
-                            <span>{t.lastEncouraged}</span>
-                            <strong className="text-foreground font-semibold">
-                              {formatRelativeEncouragedDate(supporter.last_encouraged_at, language)}
-                            </strong>
-                          </p>
-                          <p className="text-[11px] text-primary-600 dark:text-primary-400 font-medium">
-                            {t.encouragedGoalTimes.replace('{count}', supporter.total_encouragements.toString())}
-                          </p>
-                        </div>
+                        <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold line-clamp-2 pt-0.5">
+                          "{supporter.last_message || '❤️ เป็นกำลังใจให้นะ'}"
+                        </p>
+
+                        <p className="text-[11px] text-primary-600 dark:text-primary-400 font-medium pt-0.5">
+                          {t.encouragedGoalTimes.replace('{count}', supporter.total_encouragements.toString())}
+                        </p>
                       </div>
                     </div>
                   ))}
