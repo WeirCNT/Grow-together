@@ -92,58 +92,12 @@ export function CommunityPage() {
     try {
       await encourageGoal(goal.id, user.id, goal.user_id, profile?.full_name, customMessage)
 
-      // Optimistic update of local summary
-      setSummaries((prev) => {
-        const current = prev[goal.id] || {
-          totalCount: 0,
-          uniqueSupportersCount: 0,
-          userHasEncouragedToday: false,
-          userTotalEncouragements: 0,
-          recentSupporters: [],
-        }
-
-        const updatedUserTotal = current.userTotalEncouragements + 1
-        const updatedTotal = current.totalCount + 1
-        const nowISO = new Date().toISOString()
-        const sentMessage = customMessage.trim() || '❤️ เป็นกำลังใจให้นะ'
-
-        // Update or insert current user into recent supporters list
-        const existingSupporters = [...current.recentSupporters]
-        const userIndex = existingSupporters.findIndex((s) => s.user_id === user.id)
-
-        if (userIndex >= 0) {
-          existingSupporters[userIndex] = {
-            ...existingSupporters[userIndex],
-            last_encouraged_at: nowISO,
-            last_message: sentMessage,
-            total_encouragements: existingSupporters[userIndex].total_encouragements + 1,
-          }
-        } else if (profile) {
-          existingSupporters.unshift({
-            user_id: user.id,
-            profile,
-            last_encouraged_at: nowISO,
-            last_message: sentMessage,
-            total_encouragements: 1,
-          })
-        }
-
-        // Re-sort by last_encouraged_at DESC
-        existingSupporters.sort(
-          (a, b) => new Date(b.last_encouraged_at).getTime() - new Date(a.last_encouraged_at).getTime()
-        )
-
-        return {
-          ...prev,
-          [goal.id]: {
-            totalCount: updatedTotal,
-            uniqueSupportersCount: existingSupporters.length,
-            userHasEncouragedToday: true,
-            userTotalEncouragements: updatedUserTotal,
-            recentSupporters: existingSupporters,
-          },
-        }
-      })
+      // Re-fetch fresh summary directly from database after encourage succeeds
+      const freshSummary = await getGoalSupportSummary(goal.id, user.id)
+      setSummaries((prev) => ({
+        ...prev,
+        [goal.id]: freshSummary,
+      }))
 
       setEncourageModalOpen(false)
       setSelectedGoalForEncourage(null)

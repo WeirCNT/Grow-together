@@ -7,6 +7,7 @@ export interface GoalEncouragement {
   goal_id: string
   from_user: string
   message: string
+  support_date?: string
   created_at: string
   profile: Profile
 }
@@ -26,17 +27,17 @@ export async function getGoalSupportSummary(
   const todayISO = getTodayISO()
 
   try {
-    // 1. Fetch all supports for this goal with associated profile details
+    // 1. Fetch all supports for this goal with associated profile details including support_date
     const { data: supports, error } = await supabase
       .from('supports')
-      .select('id, goal_id, from_user, message, created_at, profile:profiles!supports_from_user_fkey(id, student_id, full_name, avatar)')
+      .select('id, goal_id, from_user, message, support_date, created_at, profile:profiles!supports_from_user_fkey(id, student_id, full_name, avatar)')
       .eq('goal_id', goalId)
 
     if (error) {
       // Fallback query if profiles foreign key alias differs
       const { data: rawSupports, error: rawErr } = await supabase
         .from('supports')
-        .select('id, goal_id, from_user, message, created_at')
+        .select('id, goal_id, from_user, message, support_date, created_at')
         .eq('goal_id', goalId)
 
       if (rawErr) {
@@ -78,15 +79,15 @@ async function processRecentSupportersSummary(
 
   const userTotalEncouragements = userSupports.length
 
-  // Check if encouraged today using created_at timestamp formatted as ISO YYYY-MM-DD
+  // Check if user has encouraged today using support_date (fallback to created_at date)
   const userHasEncouragedToday = currentUserId
     ? userSupports.some((s) => {
-        const sDate = s.created_at ? s.created_at.split('T')[0] : ''
+        const sDate = s.support_date || (s.created_at ? s.created_at.split('T')[0] : '')
         return sDate === todayISO
       })
     : false
 
-  // Group by unique supporter and record total count & latest encouragement timestamp (created_at)
+  // Group by unique supporter and record total count & latest encouragement timestamp
   const supporterMap = new Map<
     string,
     { count: number; lastEncouragedAt: string; profile?: Profile; lastMessage?: string }
@@ -172,14 +173,14 @@ export async function getGoalEncouragements(goalId: string): Promise<GoalEncoura
   try {
     const { data, error } = await supabase
       .from('supports')
-      .select('id, goal_id, from_user, message, created_at, profile:profiles!supports_from_user_fkey(id, student_id, full_name, avatar)')
+      .select('id, goal_id, from_user, message, support_date, created_at, profile:profiles!supports_from_user_fkey(id, student_id, full_name, avatar)')
       .eq('goal_id', goalId)
       .order('created_at', { ascending: false })
 
     if (error || !data) {
       const { data: rawData } = await supabase
         .from('supports')
-        .select('id, goal_id, from_user, message, created_at')
+        .select('id, goal_id, from_user, message, support_date, created_at')
         .eq('goal_id', goalId)
         .order('created_at', { ascending: false })
 
@@ -198,6 +199,7 @@ export async function getGoalEncouragements(goalId: string): Promise<GoalEncoura
         goal_id: s.goal_id,
         from_user: s.from_user,
         message: s.message || '❤️ เป็นกำลังใจให้นะ',
+        support_date: s.support_date,
         created_at: s.created_at,
         profile: profMap.get(s.from_user) || {
           id: s.from_user,
@@ -214,6 +216,7 @@ export async function getGoalEncouragements(goalId: string): Promise<GoalEncoura
       goal_id: s.goal_id,
       from_user: s.from_user,
       message: s.message || '❤️ เป็นกำลังใจให้นะ',
+      support_date: s.support_date,
       created_at: s.created_at,
       profile: Array.isArray(s.profile)
         ? s.profile[0]
@@ -250,18 +253,21 @@ export async function encourageGoal(
 
   const trimmedMessage = customMessage?.trim() || ''
   const supportMessage = trimmedMessage || '❤️ เป็นกำลังใจให้นะ'
+  const todayISO = getTodayISO()
 
-  // 1. Insert support record matching schema: id, goal_id, from_user, message, created_at
+  // 1. Insert support record matching schema: id, goal_id, from_user, message, support_date, created_at
   const { error: insertErr } = await supabase
     .from('supports')
     .insert([{
       goal_id: goalId,
       from_user: fromUserId,
       message: supportMessage,
+      support_date: todayISO,
       created_at: new Date().toISOString(),
     }] as any)
 
   if (insertErr) {
+    console.error('[encourageGoal] Supabase Insert Error:', insertErr)
     // If unique constraint error (duplicate encouragement on same day or goal)
     if (insertErr.code === '23505' || insertErr.message.includes('unique')) {
       throw new Error('คุณได้ส่งกำลังใจให้เป้าหมายนี้ในวันนี้ไปแล้ว')

@@ -39,9 +39,9 @@ export function formatRelativeDate(date: string | Date): string {
 
 export function formatRelativeEncouragedDate(date: string | Date, lang: 'th' | 'en' = 'th'): string {
   const now = new Date()
-  const todayStr = now.toISOString().split('T')[0]
+  const todayStr = getTodayISO()
   const target = new Date(date)
-  const targetStr = target.toISOString().split('T')[0]
+  const targetStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`
 
   if (targetStr === todayStr) {
     return lang === 'th' ? 'วันนี้' : 'Today'
@@ -49,7 +49,7 @@ export function formatRelativeEncouragedDate(date: string | Date, lang: 'th' | '
 
   const yesterday = new Date(now)
   yesterday.setDate(now.getDate() - 1)
-  const yesterdayStr = yesterday.toISOString().split('T')[0]
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`
 
   if (targetStr === yesterdayStr) {
     return lang === 'th' ? 'เมื่อวาน' : 'Yesterday'
@@ -68,5 +68,9 @@ export function formatRelativeEncouragedDate(date: string | Date, lang: 'th' | '
 }
 
 export function getTodayISO(): string {
-  return new Date().toISOString().split('T')[0]
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }

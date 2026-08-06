@@ -33,6 +33,7 @@ export interface Support {
   goal_id: string
   from_user: string
   message: string
+  support_date?: string
   created_at: string
 }
 
@@ -41,6 +42,7 @@ export interface GoalEncouragement {
   goal_id: string
   from_user: string
   message: string
+  support_date?: string
   created_at: string
   profile: Profile
 }
